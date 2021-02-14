@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-void main() => runApp(MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -15,12 +20,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.red,
       ),
-      home: HomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomePage(),
+        '/next': (context) => NextPage(),
+      },
     );
   }
 }
-
-
 
 class HomePage extends StatefulWidget {
   final Widget child;
@@ -178,7 +185,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.red,
@@ -191,6 +198,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Tab(icon: Icon(FontAwesomeIcons.chartPie)),
                 Tab(icon: Icon(FontAwesomeIcons.chartLine)),
+                Tab(icon: Icon(FontAwesomeIcons.ad)),
               ],
             ),
             title: Center(
@@ -206,8 +214,13 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       children: <Widget>[
                         Text(
-                          'study level',style: TextStyle(fontSize: 25.0,fontWeight: FontWeight.bold),),
-                        SizedBox(height: 30.0,),
+                          'study level',
+                          style: TextStyle(
+                              fontSize: 25.0, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 30.0,
+                        ),
                         Expanded(
                           child: charts.BarChart(
                             _seriesData,
@@ -217,7 +230,9 @@ class _HomePageState extends State<HomePage> {
                             animationDuration: Duration(seconds: 5),
                           ),
                         ),
-                        SizedBox(height: 200.0,),
+                        SizedBox(
+                          height: 200.0,
+                        ),
                       ],
                     ),
                   ),
@@ -230,21 +245,28 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       children: <Widget>[
                         Text(
-                          'Time spent on daily tasks',style: TextStyle(fontSize: 24.0,fontWeight: FontWeight.bold),),
-                        SizedBox(height: 10.0,),
+                          'Time spent on daily tasks',
+                          style: TextStyle(
+                              fontSize: 24.0, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
                         Expanded(
-                          child: charts.PieChart(
-                              _seriesPieData,
+                          child: charts.PieChart(_seriesPieData,
                               animate: true,
                               animationDuration: Duration(seconds: 5),
                               behaviors: [
                                 new charts.DatumLegend(
-                                  outsideJustification: charts.OutsideJustification.endDrawArea,
+                                  outsideJustification:
+                                      charts.OutsideJustification.endDrawArea,
                                   horizontalFirst: false,
                                   desiredMaxRows: 2,
-                                  cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                                  cellPadding: new EdgeInsets.only(
+                                      right: 4.0, bottom: 4.0),
                                   entryTextStyle: charts.TextStyleSpec(
-                                      color: charts.MaterialPalette.purple.shadeDefault,
+                                      color: charts
+                                          .MaterialPalette.purple.shadeDefault,
                                       fontFamily: 'Georgia',
                                       fontSize: 11),
                                 )
@@ -253,7 +275,8 @@ class _HomePageState extends State<HomePage> {
                                   arcWidth: 100,
                                   arcRendererDecorators: [
                                     new charts.ArcLabelDecorator(
-                                        labelPosition: charts.ArcLabelPosition.inside)
+                                        labelPosition:
+                                            charts.ArcLabelPosition.inside)
                                   ])),
                         ),
                       ],
@@ -268,31 +291,54 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       children: <Widget>[
                         Text(
-                          'Sales for the first 5 years',style: TextStyle(fontSize: 24.0,fontWeight: FontWeight.bold),),
+                          'Sales for the first 5 years',
+                          style: TextStyle(
+                              fontSize: 24.0, fontWeight: FontWeight.bold),
+                        ),
                         Expanded(
-                          child: charts.LineChart(
-                              _seriesLineData,
+                          child: charts.LineChart(_seriesLineData,
                               defaultRenderer: new charts.LineRendererConfig(
                                   includeArea: true, stacked: true),
                               animate: true,
                               animationDuration: Duration(seconds: 5),
                               behaviors: [
                                 new charts.ChartTitle('Years',
-                                    behaviorPosition: charts.BehaviorPosition.bottom,
-                                    titleOutsideJustification:charts.OutsideJustification.middleDrawArea),
+                                    behaviorPosition:
+                                        charts.BehaviorPosition.bottom,
+                                    titleOutsideJustification: charts
+                                        .OutsideJustification.middleDrawArea),
                                 new charts.ChartTitle('Sales',
-                                    behaviorPosition: charts.BehaviorPosition.start,
-                                    titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
-                                new charts.ChartTitle('Departments',
+                                    behaviorPosition:
+                                        charts.BehaviorPosition.start,
+                                    titleOutsideJustification: charts
+                                        .OutsideJustification.middleDrawArea),
+                                new charts.ChartTitle(
+                                  'Departments',
                                   behaviorPosition: charts.BehaviorPosition.end,
-                                  titleOutsideJustification:charts.OutsideJustification.middleDrawArea,
+                                  titleOutsideJustification: charts
+                                      .OutsideJustification.middleDrawArea,
                                 )
-                              ]
-                          ),
+                              ]),
                         ),
                       ],
                     ),
                   ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Container(
+                  child: Column(children: <Widget>[
+                    Text(
+                      'Sales for the first 5 years',
+                      style: TextStyle(
+                          fontSize: 24.0, fontWeight: FontWeight.bold),
+                    ),
+                    RaisedButton(
+                      onPressed: () => {Navigator.pushNamed(context, '/next')},
+                      child: Text('次のページへ'),
+                    )
+                  ]),
                 ),
               ),
             ],
@@ -302,6 +348,76 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+class NextPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('NextPage'),
+        centerTitle: true,
+      ),
+      body: _buildBody(context),
+    );
+  }
+}
+
+Widget _buildBody(BuildContext context) {
+  return StreamBuilder<QuerySnapshot>(
+    stream: FirebaseFirestore.instance.collection('users').snapshots(),
+    builder: (context, snapshot) {
+      if (!snapshot.hasData) return LinearProgressIndicator();
+
+      return _buildList(context, snapshot.data.docs);
+    },
+  );
+}
+
+Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+  return ListView(
+    padding: const EdgeInsets.only(top: 20.0),
+    children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+  );
+}
+
+Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
+  final record = Record.fromSnapshot(data);
+
+  return Padding(
+    key: ValueKey(record.name),
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+    child: Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+      child: ListTile(
+        title: Text(record.name),
+        trailing: Text(record.votes.toString()),
+        onTap: () => record.reference.update({'votes': FieldValue.increment(1)}),       ),
+    ),
+  );
+}
+
+
+class Record {
+  final String name;
+  final int votes;
+  final DocumentReference reference;
+
+  Record.fromMap(Map<String, dynamic> map, {this.reference})
+      : assert(map['name'] != null),
+        assert(map['votes'] != null),
+        name = map['name'],
+        votes = map['votes'];
+
+  Record.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data(), reference: snapshot.reference);
+
+  @override
+  String toString() => "Record<$name:$votes>";
+}
+
 
 class Pollution {
   String place;

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "297758521747",
+    "project_id": "charts2-b6fee",
+    "storage_bucket": "charts2-b6fee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297758521747:android:b2baebcf31474901a11066",
+        "android_client_info": {
+          "package_name": "com.example.charts2_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "297758521747-8r1tkqg72fhd18ja67jui4vvmmup2m33.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRHz7juayjO-DFFg21bAwnmGd2SF7mB_0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "297758521747-8r1tkqg72fhd18ja67jui4vvmmup2m33.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
