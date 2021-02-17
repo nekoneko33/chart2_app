@@ -406,9 +406,9 @@ class Record {
   final DocumentReference reference;
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
-      : assert(map['name'] != null),
+      : assert(map['subject'] != null),
         assert(map['votes'] != null),
-        name = map['name'],
+        name = map['subject'],
         votes = map['votes'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
