@@ -1,9 +1,10 @@
 import 'package:charts2_app/screen/home_page.dart';
 import 'package:charts2_app/screen/next_page.dart';
+import 'package:charts2_app/screen/third_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => HomePage(),
         '/next': (context) => NextPage(),
+        '/third': (context) => ThirdPage(),
       },
     );
   }

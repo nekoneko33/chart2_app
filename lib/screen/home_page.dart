@@ -235,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                               behaviors: [
                                 new charts.DatumLegend(
                                   outsideJustification:
-                                  charts.OutsideJustification.endDrawArea,
+                                      charts.OutsideJustification.endDrawArea,
                                   horizontalFirst: false,
                                   desiredMaxRows: 2,
                                   cellPadding: new EdgeInsets.only(
@@ -252,7 +252,7 @@ class _HomePageState extends State<HomePage> {
                                   arcRendererDecorators: [
                                     new charts.ArcLabelDecorator(
                                         labelPosition:
-                                        charts.ArcLabelPosition.inside)
+                                            charts.ArcLabelPosition.inside)
                                   ])),
                         ),
                       ],
@@ -280,12 +280,12 @@ class _HomePageState extends State<HomePage> {
                               behaviors: [
                                 new charts.ChartTitle('Years',
                                     behaviorPosition:
-                                    charts.BehaviorPosition.bottom,
+                                        charts.BehaviorPosition.bottom,
                                     titleOutsideJustification: charts
                                         .OutsideJustification.middleDrawArea),
                                 new charts.ChartTitle('Sales',
                                     behaviorPosition:
-                                    charts.BehaviorPosition.start,
+                                        charts.BehaviorPosition.start,
                                     titleOutsideJustification: charts
                                         .OutsideJustification.middleDrawArea),
                                 new charts.ChartTitle(
@@ -313,7 +313,11 @@ class _HomePageState extends State<HomePage> {
                     RaisedButton(
                       onPressed: () => {Navigator.pushNamed(context, '/next')},
                       child: Text('次のページへ'),
-                    )
+                    ),
+                    RaisedButton(
+                      onPressed: () => {Navigator.pushNamed(context, '/third')},
+                      child: Text('次のページへ'),
+                    ),
                   ]),
                 ),
               ),

@@ -8,7 +8,7 @@ class DataBloc {
   void getRecord() {
     FirebaseFirestore.instance
         .collection('users')
-        .where("english")
+        //.where("japanese")
         .get()
         .then((QuerySnapshot value) {
       streamController.add(value.docs);
