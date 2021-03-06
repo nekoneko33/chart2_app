@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:charts2_app/model/chatDataModel.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:sample_flutter/model/chatDataModel.dart';
 
 class ChatBloc {
   final _notesReference = FirebaseDatabase.instance.reference();
