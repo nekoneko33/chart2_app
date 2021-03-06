@@ -318,6 +318,10 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () => {Navigator.pushNamed(context, '/third')},
                       child: Text('次のページへ'),
                     ),
+                    RaisedButton(
+                      onPressed: () => {Navigator.pushNamed(context, '/forth')},
+                      child: Text('次のページへ'),
+                    ),
                   ]),
                 ),
               ),

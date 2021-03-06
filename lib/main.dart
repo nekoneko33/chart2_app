@@ -1,3 +1,4 @@
+import 'package:charts2_app/screen/forth_page.dart';
 import 'package:charts2_app/screen/home_page.dart';
 import 'package:charts2_app/screen/next_page.dart';
 import 'package:charts2_app/screen/third_page.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => HomePage(),
         '/next': (context) => NextPage(),
         '/third': (context) => ThirdPage(),
+        '/forth': (context) => MyHomePage(),
       },
     );
   }
