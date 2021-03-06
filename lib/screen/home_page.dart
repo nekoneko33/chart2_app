@@ -10,23 +10,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var data1 = [
+  static var data1 = [
     new Pollution(1980, 'Math', 30),
     new Pollution(1980, 'English', 40),
     new Pollution(1980, 'Science', 10),
   ];
-  var data2 = [
+  static var data2 = [
     new Pollution(1985, 'Math', 80),
     new Pollution(1985, 'English', 60),
     new Pollution(1985, 'Science', 20),
   ];
-  var data3 = [
+  static var data3 = [
     new Pollution(1990, 'Math', 100),
     new Pollution(1990, 'English', 50),
     new Pollution(1990, 'Science', 80),
   ];
 
-  var piedata = [
+  static var piedata = [
     new Task('Study', 35.8, Color(0xff3366cc)),
     new Task('Eat', 8.3, Color(0xff990099)),
     new Task('Commute', 10.8, Color(0xff109618)),
@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
     new Task('Other', 10.3, Color(0xffdc3912)),
   ];
 
-  var linesalesdata = [
+  static var linesalesdata = [
     new Sales(0, 45),
     new Sales(1, 56),
     new Sales(2, 55),
@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
     new Sales(4, 61),
     new Sales(5, 70),
   ];
-  var linesalesdata1 = [
+  static var linesalesdata1 = [
     new Sales(0, 35),
     new Sales(1, 46),
     new Sales(2, 45),
@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
     new Sales(5, 60),
   ];
 
-  var linesalesdata2 = [
+  static var linesalesdata2 = [
     new Sales(0, 20),
     new Sales(1, 24),
     new Sales(2, 25),

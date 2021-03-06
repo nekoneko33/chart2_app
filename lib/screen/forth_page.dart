@@ -17,8 +17,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  final String userName = "321";
-  final ChatBloc bloc = ChatBloc("321");
+  final String userName = "1";
+  final ChatBloc bloc = ChatBloc("1");
   List<ChatDataModel> message = [];
   String sendMessage;
   final _controller = TextEditingController();
@@ -36,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _sendMessage() {
     if (sendMessage != null) {
       ChatDataModel sendData = ChatDataModel()
-        ..userName = userName
+        ..sendUserName = userName
         ..message = sendMessage
         ..date = DateTime.now();
       bloc.send(sendData);
@@ -71,14 +71,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       .map(
                         (e) =>
                         Container(
-                          color: e.userName == userName
+                          color: e.sendUserName == userName
                               ? Colors.green
                               : Colors.transparent,
                           child: ListTile(
                             title: Text(
-                              e.message,
+                              e.message ?? '',
                               style: TextStyle(
-                                color: e.userName == userName
+                                color: e.sendUserName == userName
                                     ? Colors.white
                                     : Colors.black,
                               ),
