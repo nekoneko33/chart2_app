@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class _SentMessageWidget extends StatelessWidget {
+class SentMessageWidget extends StatelessWidget {
   final String message;
 
-  _SentMessageWidget({this.message});
+  SentMessageWidget({this.message});
 
   final _formatter = DateFormat("HH:MM");
 
