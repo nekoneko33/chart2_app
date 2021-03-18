@@ -187,81 +187,97 @@ class _MyHomePageState extends State<MyHomePage>
           child: Column(
             children: <Widget>[
               Expanded(
-                child: ListView.builder(
-                  itemCount: message.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (message[index].isImage) {
-                      // TODO レイアウトの調整
-                      if (message[index].sendUserName == userName) {
-                        return Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    _formatter.format(message[index].date),
-                                    style: const TextStyle(fontSize: 10),
-                                  ),
-                                  ConstrainedBox(
-                                      constraints: BoxConstraints.expand(
-                                          height: 200, width: 200),
-                                      child: Image.network(
-                                          message[index].imageUrl))
-                                ]));
-                      } else {
-                        return Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [CircleAvatar()]),
-                                  ConstrainedBox(
-                                      constraints: BoxConstraints.expand(
-                                          height: 200, width: 200),
-                                      child: Image.network(
-                                          message[index].imageUrl)),
-                                  Text(
-                                    _formatter.format(message[index].date),
-                                    style: const TextStyle(fontSize: 10),
-                                  ),
-                                ]));
-                      }
-                    } else if (message[index].iconName != null &&
-                        message[index].iconName.isNotEmpty) {
-                      return Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 5, horizontal: 10),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [CircleAvatar()]),
-                                ConstrainedBox(
-                                    constraints: BoxConstraints.expand(
-                                        height: 200, width: 200),
-                                    child: Icon(
-                                        iconList[message[index].iconName])),
-                                Text(
-                                  _formatter.format(message[index].date),
-                                  style: const TextStyle(fontSize: 10),
-                                ),
-                              ]));
-                    }
-                    if (message[index].sendUserName == userName)
-                      return SentMessageWidget(message: message[index].message);
-                    return ReceivedMessageWidget(
-                        message: message[index].message);
-                  },
+                child: Stack(
+                  children: [
+                    ListView.builder(
+                      itemCount: message.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (message[index].isImage) {
+                          // TODO レイアウトの調整
+                          if (message[index].sendUserName == userName) {
+                            return Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 10),
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        _formatter.format(message[index].date),
+                                        style: const TextStyle(fontSize: 10),
+                                      ),
+                                      ConstrainedBox(
+                                          constraints: BoxConstraints.expand(
+                                              height: 200, width: 200),
+                                          child: Image.network(
+                                              message[index].imageUrl))
+                                    ]));
+                          } else {
+                            return Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 10),
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [CircleAvatar()]),
+                                      ConstrainedBox(
+                                          constraints: BoxConstraints.expand(
+                                              height: 200, width: 200),
+                                          child: Image.network(
+                                              message[index].imageUrl)),
+                                      Text(
+                                        _formatter.format(message[index].date),
+                                        style: const TextStyle(fontSize: 10),
+                                      ),
+                                    ]));
+                          }
+                        } else if (message[index].iconName != null &&
+                            message[index].iconName.isNotEmpty) {
+                          return Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [CircleAvatar()]),
+                                    ConstrainedBox(
+                                        constraints: BoxConstraints.expand(
+                                            height: 200, width: 200),
+                                        child: Icon(
+                                            iconList[message[index].iconName])),
+                                    Text(
+                                      _formatter.format(message[index].date),
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
+                                  ]));
+                        }
+                        if (message[index].sendUserName == userName)
+                          return SentMessageWidget(
+                              message: message[index].message);
+                        return ReceivedMessageWidget(
+                            message: message[index].message);
+                      },
+                    ),
+                    height != 0 ? InkWell(
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        setState(() {
+                          _animationController.animateTo(
+                            0.0,
+                          );
+                        });
+                      },
+                    ) : Container(),
+                  ],
                 ),
                 /*child: ListView(
                  //reverse: true,
