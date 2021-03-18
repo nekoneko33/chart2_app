@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:charts2_app/bloc/chatBloc.dart';
 import 'package:charts2_app/model/chatDataModel.dart';
@@ -30,6 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final _controller = TextEditingController();
   File _image;
   final picker = ImagePicker();
+  final _formatter = DateFormat("HH:MM");
 
   @override
   void initState() {
@@ -47,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
+        upload();
       } else {
         print('No image selected.');
       }
@@ -140,7 +143,47 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemBuilder: (BuildContext context, int index) {
                     if (message[index].isImage) {
                       // TODO レイアウトの調整
-                      return Image.network(message[index].imageUrl);
+                      if (message[index].sendUserName == userName) {
+                        return Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    _formatter.format(message[index].date),
+                                    style: const TextStyle(fontSize: 10),
+                                  ),
+                                  ConstrainedBox(
+                                      constraints: BoxConstraints.expand(
+                                          height: 200, width: 200),
+                                      child: Image.network(
+                                          message[index].imageUrl))
+                                ]));
+                      } else {
+                        return Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [CircleAvatar()]),
+                                  ConstrainedBox(
+                                      constraints: BoxConstraints.expand(
+                                          height: 200, width: 200),
+                                      child: Image.network(
+                                          message[index].imageUrl)),
+                                  Text(
+                                    _formatter.format(message[index].date),
+                                    style: const TextStyle(fontSize: 10),
+                                  ),
+                                ]));
+                      }
                     }
                     if (message[index].sendUserName == userName)
                       return SentMessageWidget(message: message[index].message);
@@ -216,6 +259,55 @@ class _MyHomePageState extends State<MyHomePage> {
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: Icon(Icons.emoji_emotions_outlined),
+                            onPressed: () {
+                              setState(() {
+                                return AnimatedContainer(
+                                  width: 500,
+                                  height: 500,
+                                  duration: Duration(seconds: 1),
+                                  color: Colors.black,
+                                );
+                              });
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          bottom: 0,
+                          right: 30,
+                          child: IconButton(
+                            icon: Icon(Icons.emoji_emotions_sharp),
+                            onPressed: () async {
+                              var result = await showModalBottomSheet<int>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      ListTile(
+                                        leading: Icon(Icons.music_note),
+                                        title: Text('Music'),
+                                        onTap: () =>
+                                            Navigator.of(context).pop(1),
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.videocam),
+                                        title: Text('Video'),
+                                        onTap: () =>
+                                            Navigator.of(context).pop(2),
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.camera),
+                                        title: Text('Picture'),
+                                        onTap: () =>
+                                            Navigator.of(context).pop(3),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                              print('bottom sheet result: $result');
+                            },
                           ),
                         ),
                       ],
@@ -229,6 +321,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
+              //Container(Anime)
             ],
           ),
         ),
