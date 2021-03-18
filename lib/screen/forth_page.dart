@@ -23,7 +23,8 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   final String userName = "1";
   final ChatBloc bloc = ChatBloc("1");
   List<ChatDataModel> message = [];
@@ -32,10 +33,23 @@ class _MyHomePageState extends State<MyHomePage> {
   File _image;
   final picker = ImagePicker();
   final _formatter = DateFormat("HH:MM");
+  AnimationController _animationController;
+  double height = 0;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this, // the SingleTickerProviderStateMixin
+      duration: Duration(milliseconds: 200),
+    );
+
+    _animationController.addListener(() {
+      setState(() {
+        height = _animationController.value * 300;
+      });
+    });
+
     bloc.sendResultStream.stream.listen((ChatDataModel event) {
       setState(() {
         message.add(event);
@@ -261,12 +275,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             icon: Icon(Icons.emoji_emotions_outlined),
                             onPressed: () {
                               setState(() {
-                                return AnimatedContainer(
-                                  width: 500,
-                                  height: 500,
-                                  duration: Duration(seconds: 1),
-                                  color: Colors.black,
-                                );
+                                if (height == 0) {
+                                  _animationController.animateTo(1.0,);
+                                } else {
+                                  _animationController.animateTo(0.0,);
+                                }
                               });
                             },
                           ),
@@ -320,6 +333,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                 ],
+              ),
+              Container(
+                width: double.infinity,
+                height: height,
+                color: Colors.black,
               ),
               //Container(Anime)
             ],
