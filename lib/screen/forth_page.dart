@@ -36,6 +36,14 @@ class _MyHomePageState extends State<MyHomePage>
   AnimationController _animationController;
   double height = 0;
 
+  final Map<String, IconData> iconList = {
+    "error": Icons.error,
+    "camera": Icons.camera,
+    "message": Icons.message,
+    "add": Icons.add,
+    "map": Icons.map,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -107,6 +115,18 @@ class _MyHomePageState extends State<MyHomePage>
     }
   }
 
+  void _sendIcon(String name) {
+    if (name != null) {
+      ChatDataModel sendData = ChatDataModel()
+        ..sendUserName = userName
+        ..date = DateTime.now()
+        ..iconName = name;
+      bloc.send(sendData);
+      _controller.clear();
+      sendMessage = null;
+    }
+  }
+
   void _sendImage(String imageUrl) {
     if (imageUrl != null) {
       ChatDataModel sendData = ChatDataModel()
@@ -118,6 +138,21 @@ class _MyHomePageState extends State<MyHomePage>
       _controller.clear();
       sendMessage = null;
     }
+  }
+
+  List<Widget> createListWidget() {
+    List<IconButton> iconData = [];
+    iconList.forEach((String key, IconData value) {
+      iconData.add(
+        IconButton(
+          icon: Icon(value),
+          onPressed: () {
+            _sendIcon(key);
+          },
+        ),
+      );
+    });
+    return iconData;
   }
 
   @override
@@ -198,6 +233,29 @@ class _MyHomePageState extends State<MyHomePage>
                                   ),
                                 ]));
                       }
+                    } else if (message[index].iconName != null &&
+                        message[index].iconName.isNotEmpty) {
+                      return Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 10),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [CircleAvatar()]),
+                                ConstrainedBox(
+                                    constraints: BoxConstraints.expand(
+                                        height: 200, width: 200),
+                                    child: Icon(
+                                        iconList[message[index].iconName])),
+                                Text(
+                                  _formatter.format(message[index].date),
+                                  style: const TextStyle(fontSize: 10),
+                                ),
+                              ]));
                     }
                     if (message[index].sendUserName == userName)
                       return SentMessageWidget(message: message[index].message);
@@ -276,9 +334,13 @@ class _MyHomePageState extends State<MyHomePage>
                             onPressed: () {
                               setState(() {
                                 if (height == 0) {
-                                  _animationController.animateTo(1.0,);
+                                  _animationController.animateTo(
+                                    1.0,
+                                  );
                                 } else {
-                                  _animationController.animateTo(0.0,);
+                                  _animationController.animateTo(
+                                    0.0,
+                                  );
                                 }
                               });
                             },
@@ -337,9 +399,11 @@ class _MyHomePageState extends State<MyHomePage>
               Container(
                 width: double.infinity,
                 height: height,
-                color: Colors.black,
+                child: GridView.count(
+                  crossAxisCount: 5,
+                  children: createListWidget(),
+                ),
               ),
-              //Container(Anime)
             ],
           ),
         ),

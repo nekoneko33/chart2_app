@@ -9,6 +9,7 @@ class ChatDataModel {
   String message;
   bool isImage;
   String imageUrl;
+  String iconName;
 
   ChatDataModel({
     this.sendUserName,
@@ -16,6 +17,7 @@ class ChatDataModel {
     this.message,
     this.isImage = false,
     this.imageUrl,
+    this.iconName,
   });
 
   //ChatDataModel(sendUserName: userName, message: sendMessage, date: DateTime.now());
@@ -26,6 +28,7 @@ class ChatDataModel {
         "message": message,
         "isImage": isImage,
         "imageUrl": imageUrl,
+        "iconName": iconName,
       };
 
   factory ChatDataModel.fromSnapshot(DataSnapshot snapshot) => ChatDataModel(
@@ -34,5 +37,6 @@ class ChatDataModel {
         message: snapshot.value["message"],
         isImage: snapshot.value["isImage"] ?? false,
         imageUrl: snapshot.value["imageUrl"],
+        iconName: snapshot.value["iconName"],
       );
 }
