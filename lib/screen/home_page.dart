@@ -304,7 +304,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                     RaisedButton(
                       onPressed: () => {Navigator.pushNamed(context, '/signup')},
-                      child: Text('次のページへ'),
+                      child: Text('新規登録'),
+                    ),
+                    RaisedButton(
+                      onPressed: () => {Navigator.pushNamed(context, '/login')},
+                      child: Text('ログイン'),
                     ),
                   ]),
                 ),
