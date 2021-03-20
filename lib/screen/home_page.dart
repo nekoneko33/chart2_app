@@ -303,7 +303,7 @@ class _HomePageState extends State<HomePage> {
                       child: Text('次のページへ'),
                     ),
                     RaisedButton(
-                      onPressed: () => {Navigator.pushNamed(context, '/forth')},
+                      onPressed: () => {Navigator.pushNamed(context, '/signup')},
                       child: Text('次のページへ'),
                     ),
                   ]),
