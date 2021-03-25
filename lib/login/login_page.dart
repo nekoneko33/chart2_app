@@ -39,7 +39,7 @@ class LoginPage extends StatelessWidget {
                 RaisedButton(
                   child: Text('ログイン'),
                   onPressed: () async {
-                    await model.login();
+                    await model.login(context);
                   },
                 ),
               ]),

@@ -1,4 +1,5 @@
 
+import 'package:charts2_app/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,7 +10,7 @@ class LoginModel extends ChangeNotifier {
 
   //FirebaseAuth auth = FirebaseAuth.instance;
 
-  Future login() async {
+  Future login(BuildContext context) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(
@@ -17,7 +18,10 @@ class LoginModel extends ChangeNotifier {
         password: password,
       );
       print(userCredential.user.email);
-      Navigator.pushNamed(context, '/forth');
+      print(userCredential.user.uid);
+      //Navigator.pushNamed(context, '/forth');
+      //Navigator.pushNamedAndRemoveUntil(context, '/forth', ModalRoute.withName("/"));
+      Navigator.pushReplacementNamed(context, '/forth');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
