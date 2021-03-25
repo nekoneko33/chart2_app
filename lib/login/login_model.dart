@@ -1,3 +1,5 @@
+
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -14,6 +16,8 @@ class LoginModel extends ChangeNotifier {
         email: mail,
         password: password,
       );
+      print(userCredential.user.email);
+      Navigator.pushNamed(context, '/forth');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
