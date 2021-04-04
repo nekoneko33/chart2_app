@@ -14,7 +14,7 @@ class LoginPage extends StatelessWidget {
       create: (_) => LoginModel(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('サインアップ'),
+          title: Text('ログイン'),
         ),
         body: Consumer<LoginModel>(
           builder: (context, model, child) {

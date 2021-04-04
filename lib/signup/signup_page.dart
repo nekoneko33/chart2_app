@@ -13,7 +13,7 @@ class SignUpPage extends StatelessWidget {
       create: (_) => SignUpModel(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('サインアップ'),
+          title: Text('新規登録'),
         ),
         body: Consumer<SignUpModel>(
           builder: (context, model, child) {

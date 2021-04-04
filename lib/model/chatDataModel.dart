@@ -22,6 +22,14 @@ class ChatDataModel {
 
   //ChatDataModel(sendUserName: userName, message: sendMessage, date: DateTime.now());
 
+
+
+  //Json形で登録
+  /*{
+  'sendUserName': "hirose",
+  'dateTime': "2021/03/25"  JsonFile
+  左がkey,右がvalue
+  }*/
   Map<String, dynamic> toJson() => <String, dynamic>{
         "sendUserName": sendUserName,
         "dateTime": date.toLocal().toIso8601String(),
@@ -31,6 +39,8 @@ class ChatDataModel {
         "iconName": iconName,
       };
 
+
+  //Jsonデータからデータの取得
   factory ChatDataModel.fromSnapshot(DataSnapshot snapshot) => ChatDataModel(
         sendUserName: snapshot.value["sendUserName"],
         date: DateTime.parse(snapshot.value["dateTime"]),
@@ -39,4 +49,5 @@ class ChatDataModel {
         imageUrl: snapshot.value["imageUrl"],
         iconName: snapshot.value["iconName"],
       );
+
 }
