@@ -1,4 +1,3 @@
-import 'file:///C:/project/charts2_app/lib/book_list/book_list_model.dart';
 import 'package:charts2_app/add_book/add_book_model.dart';
 import 'package:charts2_app/book_list/book.dart';
 import 'package:charts2_app/user_preference/user_preference_model.dart';

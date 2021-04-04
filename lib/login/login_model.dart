@@ -20,8 +20,7 @@ class LoginModel extends ChangeNotifier {
       print(userCredential.user.email);
       print(userCredential.user.uid);
       //Navigator.pushNamed(context, '/forth');
-      //Navigator.pushNamedAndRemoveUntil(context, '/forth', ModalRoute.withName("/"));
-      Navigator.pushReplacementNamed(context, '/forth');
+      Navigator.pushNamedAndRemoveUntil(context, '/home', ModalRoute.withName("/"));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');

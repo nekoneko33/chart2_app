@@ -1,11 +1,10 @@
-
-
-import 'file:///C:/project/charts2_app/lib/book_list/book_list_model.dart';
 import 'package:charts2_app/user_preference/user_preference_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'book_list_model.dart';
 
 class BookListPage extends StatelessWidget {
   @override
