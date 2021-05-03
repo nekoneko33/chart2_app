@@ -3,12 +3,12 @@ import 'package:flutter/cupertino.dart';
 
 class Book {
   Book(QueryDocumentSnapshot doc) {
-    documentID = doc.get(documentID);
-    title = doc['title'];
-    //imageURL = doc['imageURL'];
+    documentID = doc.id;
+    title = doc.data()['title'];
+    imageURL = doc.data()['imageURL'] ;
   }
 
   String title;
   String documentID;
-  //String imageURL;
+  String imageURL;
 }

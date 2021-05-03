@@ -4,6 +4,7 @@ import 'package:charts2_app/screen/home_page.dart';
 import 'package:charts2_app/screen/init_page.dart';
 import 'package:charts2_app/screen/next_page.dart';
 import 'package:charts2_app/screen/third_page.dart';
+import 'package:provider/provider.dart';
 import 'add_book/add_book_page.dart';
 import 'file:///C:/project/charts2_app/lib/book_list/book_list_page.dart';
 import 'file:///C:/project/charts2_app/lib/user_preference/user_preference.dart';
@@ -12,6 +13,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:charts2_app/signup/signup_page.dart';
 import 'package:charts2_app/login/login_page.dart';
 import 'file:///C:/project/charts2_app/lib/book_list/book_list_page.dart';
+import 'loading/loading_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,24 +26,42 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Animated Charts App',
-      theme: ThemeData(
-        primaryColor: Colors.red,
+      home: ChangeNotifierProvider<LoadingModel>(
+          create: (_) => LoadingModel(),
+          //Provider.of<LoadModel>(context).startLoading();
+          child :
+           Stack(
+            children: [
+              MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title: 'Flutter Animated Charts App',
+                theme: ThemeData(
+                  primaryColor: Colors.red,
+                ),
+                initialRoute: '/init',
+                routes: {
+                  '/': (context) => HomePage(),
+                  '/next': (context) => NextPage(),
+                  '/third': (context) => ThirdPage(),
+                  '/forth': (context) => MyHomePage(),
+                  '/signup': (context) => SignUpPage(),
+                  '/login': (context) => LoginPage(),
+                  '/userpreference': (context) => UserPreferencePage(),
+                  '/init': (context) => InitPage(),
+                  '/booklist': (context) => BookListPage(),
+                  '/addbook': (context) => AddBookPage(),
+                },
+              ),
+              /*Container(
+                color: Colors.grey.withOpacity(0.7),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )*/
+            ],
+          ),
+
       ),
-      initialRoute: '/init',
-      routes: {
-        '/': (context) => HomePage(),
-        '/next': (context) => NextPage(),
-        '/third': (context) => ThirdPage(),
-        '/forth': (context) => MyHomePage(),
-        '/signup': (context) => SignUpPage(),
-        '/login': (context) => LoginPage(),
-        '/userpreference': (context) => UserPreferencePage(),
-        '/init': (context) => InitPage(),
-        '/booklist': (context) => BookListPage(),
-        '/addbook': (context) => AddBookPage(),
-      },
     );
   }
 }

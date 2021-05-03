@@ -1,4 +1,5 @@
-import 'dart:html';
+
+import 'dart:io';
 
 import 'package:charts2_app/book_list/book.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,8 @@ class AddBookModel extends ChangeNotifier {
   String bookTitle;
   File imageFile;
   bool isLoading= false;
+
+  AddBookModel({this.bookTitle});
 
   startLoading(){
     isLoading=true;
@@ -27,7 +30,7 @@ class AddBookModel extends ChangeNotifier {
       throw ('タイトルを入力してください');
     }
 
-    final imageURL = await _uploadImage();
+    final imageURL = await _uploadImage(false);
 
     FirebaseFirestore.instance
       ..collection('books').add(
@@ -40,7 +43,9 @@ class AddBookModel extends ChangeNotifier {
   }
 
   Future updateBook(Book book) async {
-    final imageURL = await _uploadImage();
+    String imageURL;
+    if(imageFile!=null)
+      imageURL = await _uploadImage(true);
 
     final document =
     FirebaseFirestore.instance.collection('books').doc(book.documentID);
@@ -59,8 +64,10 @@ class AddBookModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> _uploadImage() async {
+  Future<String> _uploadImage(bool exist) async {
+
     final Reference ref = FirebaseStorage.instance.ref();
+
     final TaskSnapshot storedImage = await ref
         .child(bookTitle)
         .putFile(imageFile);

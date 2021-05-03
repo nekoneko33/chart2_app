@@ -7,22 +7,37 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AddBookPage extends StatelessWidget {
+class AddBookPage extends StatefulWidget {
   AddBookPage({this.book});
 
   final Book book;
 
   @override
-  Widget build(BuildContext context) {
-    final bool isUpdate = book != null;
-    final textEditingController = TextEditingController();
+  _AddBookPageState createState() => _AddBookPageState();
+}
 
+
+class _AddBookPageState extends State<AddBookPage> {
+  bool isUpdate ;
+  final textEditingController = TextEditingController();
+ @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isUpdate= widget.book != null;
     if (isUpdate) {
-      textEditingController.text = book.title;
+      textEditingController.text = widget.book.title;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+
+
 
     return ChangeNotifierProvider<AddBookModel>(
-      create: (_) => AddBookModel(),
+      create: (_) => AddBookModel(bookTitle:widget.book.title),
       child: Stack(
         children: [
           Scaffold(
@@ -41,8 +56,8 @@ class AddBookPage extends StatelessWidget {
                           await model.showImagePicker();
                         },
                         //child: Image.network('https://pics.prcm.jp/fb8c67e83f072/84692097/jpeg/84692097_218x291.jpeg')),
-                        child: model.imageFile != null
-                            ? Image.file(model.imageFile)
+                        child: model.imageFile!= null? Image.file(model.imageFile):widget.book!=null&& widget.book.imageURL != null
+                            ? Image.network(widget.book.imageURL)
                             : Container(
                                 color: Colors.grey,
                               ),
@@ -127,7 +142,7 @@ class AddBookPage extends StatelessWidget {
 
   Future updateBook(AddBookModel model, BuildContext context) async {
     try {
-      await model.updateBook(book);
+      await model.updateBook(widget.book);
       await showDialog(
         context: context,
         builder: (BuildContext context) {
