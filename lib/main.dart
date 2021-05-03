@@ -6,13 +6,12 @@ import 'package:charts2_app/screen/next_page.dart';
 import 'package:charts2_app/screen/third_page.dart';
 import 'package:provider/provider.dart';
 import 'add_book/add_book_page.dart';
-import 'file:///C:/project/charts2_app/lib/book_list/book_list_page.dart';
-import 'file:///C:/project/charts2_app/lib/user_preference/user_preference.dart';
+import 'package:charts2_app/book_list/book_list_page.dart';
+import 'package:charts2_app/user_preference/user_preference.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:charts2_app/signup/signup_page.dart';
 import 'package:charts2_app/login/login_page.dart';
-import 'file:///C:/project/charts2_app/lib/book_list/book_list_page.dart';
 import 'loading/loading_model.dart';
 
 void main() async {
@@ -29,8 +28,7 @@ class MyApp extends StatelessWidget {
       home: ChangeNotifierProvider<LoadingModel>(
           create: (_) => LoadingModel(),
           //Provider.of<LoadModel>(context).startLoading();
-          child :
-           Stack(
+          child: Stack(
             children: [
               MaterialApp(
                 debugShowCheckedModeBanner: false,
@@ -52,15 +50,20 @@ class MyApp extends StatelessWidget {
                   '/addbook': (context) => AddBookPage(),
                 },
               ),
-              /*Container(
-                color: Colors.grey.withOpacity(0.7),
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )*/
+              Consumer<LoadingModel>(
+                builder: (BuildContext context, LoadingModel model, Widget child) {
+                  if (model.isLoading)
+                    return Container(
+                      color: Colors.grey.withOpacity(0.7),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  return Container();
+                },
+              ),
             ],
-          ),
-
+          )
       ),
     );
   }

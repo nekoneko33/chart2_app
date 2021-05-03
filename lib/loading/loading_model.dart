@@ -1,10 +1,7 @@
-import 'dart:html';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LoadingModel extends ChangeNotifier {
-  String bookTitle;
-  File imageFile;
   bool isLoading = false;
 
 
@@ -18,6 +15,7 @@ class LoadingModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /*
   loading() {
     return isLoading
         ? Container(
@@ -28,5 +26,6 @@ class LoadingModel extends ChangeNotifier {
           )
         : SizedBox();
   }
+   */
 
 }
