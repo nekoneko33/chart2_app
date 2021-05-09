@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
 
->>>>>>> 9aa87e8 (calender)
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LoadingModel extends ChangeNotifier {
-<<<<<<< HEAD
-=======
 
->>>>>>> 9aa87e8 (calender)
   bool isLoading = false;
 
 
