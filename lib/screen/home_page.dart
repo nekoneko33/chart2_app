@@ -314,6 +314,10 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () => {Navigator.pushNamed(context, '/userpreference')},
                       child: Text('ログイン'),
                     ),
+                  RaisedButton(
+                      onPressed: () => {Navigator.pushNamed(context, '/calender')},
+                      child: Text('カレンダー'),
+                  ),
                   ]),
                 ),
               ),
