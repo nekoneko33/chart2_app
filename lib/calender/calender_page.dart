@@ -1,8 +1,8 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neat_and_clean_calendar/flutter_neat_and_clean_calendar.dart';
 
-
+import 'add_event_dialog.dart';
 
 class CalenderPage extends StatelessWidget {
   // This widget is the root of your application.
@@ -23,6 +23,7 @@ class CalenderScreen extends StatefulWidget {
 }
 
 class _CalenderScreenState extends State<CalenderScreen> {
+  DateTime selectedDate;
   final Map<DateTime, List<NeatCleanCalendarEvent>> _events = {
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day): [
       NeatCleanCalendarEvent('Event A',
@@ -34,7 +35,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
           color: Colors.blue[700]),
     ],
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 2):
-    [
+        [
       NeatCleanCalendarEvent('Event B',
           startTime: DateTime(DateTime.now().year, DateTime.now().month,
               DateTime.now().day + 2, 10, 0),
@@ -49,7 +50,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
           color: Colors.pink),
     ],
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 3):
-    [
+        [
       NeatCleanCalendarEvent('Event B',
           startTime: DateTime(DateTime.now().year, DateTime.now().month,
               DateTime.now().day + 2, 10, 0),
@@ -99,6 +100,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
   void initState() {
     super.initState();
     // Force selection of today on first load, so that the list of today's events gets shown.
+    selectedDate = DateTime.now();
     _handleNewDate(DateTime(
         DateTime.now().year, DateTime.now().month, DateTime.now().day));
   }
@@ -116,18 +118,32 @@ class _CalenderScreenState extends State<CalenderScreen> {
           selectedColor: Colors.pink,
           todayColor: Colors.blue,
           eventColor: Colors.grey,
-          locale: 'de_DE',
-          todayButtonText: 'Heute',
+          locale: 'ja_JP',
+          todayButtonText: '',
           isExpanded: true,
-          expandableDateFormat: 'EEEE, dd. MMMM yyyy',
+          expandableDateFormat: 'yyyy年　MM月　dd日　EEEE',
           dayOfWeekStyle: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
+          onDateSelected: _handleNewDate,
+          onMonthChanged: _handleNewDate,
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AddEventDialog(initDate: selectedDate,);
+              });
+        },
+        child: Icon(Icons.add),
+      ),
+
     );
   }
 
   void _handleNewDate(date) {
+    selectedDate = date;
     print('Date selected: $date');
   }
 }

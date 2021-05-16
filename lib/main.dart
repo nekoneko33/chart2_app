@@ -1,4 +1,5 @@
 import 'package:charts2_app/add_book/add_book_model.dart';
+import 'package:charts2_app/calender/add_event_page.dart';
 import 'package:charts2_app/screen/forth_page.dart';
 import 'package:charts2_app/screen/home_page.dart';
 import 'package:charts2_app/screen/init_page.dart';
@@ -14,6 +15,7 @@ import 'package:charts2_app/signup/signup_page.dart';
 import 'package:charts2_app/login/login_page.dart';
 import 'calender/calender_page.dart';
 import 'loading/loading_model.dart';
+import 'package:charts2_app/calender/add_event_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +52,7 @@ class MyApp extends StatelessWidget {
                   '/booklist': (context) => BookListPage(),
                   '/addbook': (context) => AddBookPage(),
                   '/calender': (context) => CalenderPage(),
+                  '/addeventpage': (context) => AddEventPage(),
                 },
               ),
               Consumer<LoadingModel>(
