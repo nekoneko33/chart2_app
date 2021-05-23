@@ -133,7 +133,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
           showDialog(
               context: context,
               builder: (context) {
-                return AddEventDialog(initDate: selectedDate,);
+                return AddEventDialog(context2:context,initDate: selectedDate,);
               });
         },
         child: Icon(Icons.add),

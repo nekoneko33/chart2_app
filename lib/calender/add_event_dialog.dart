@@ -14,8 +14,8 @@ import 'package:provider/provider.dart';
 
 class AddEventDialog extends StatefulWidget {
   final initDate;
-
-  const AddEventDialog({Key key, this.initDate}) : super(key: key);
+  final context2;
+  AddEventDialog({Key key, this.initDate,this.context2}) : super(key: key);
 
   @override
   _AddEventDialogState createState() => _AddEventDialogState();
@@ -47,7 +47,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
 
   @override
   Widget build(BuildContext context) {
-    bloc = CalenderBloc(loadingModel: Provider.of<LoadingModel>(context, listen: false));
+    bloc = CalenderBloc(loadingModel: Provider.of<LoadingModel>(widget.context2, listen: false));
     return Scaffold(
       body: Container(
         width: double.infinity,
