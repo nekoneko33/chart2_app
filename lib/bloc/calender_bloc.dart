@@ -11,6 +11,8 @@ class CalenderBloc {
   CalenderBloc({@required this.loadingModel});
 
   uploadEvent(CalenderModel model){
+    if(model.title==null||model.note==null)
+
     loadingModel.startLoading();
     FirebaseFirestore.instance
       ..collection('schedule').add(
@@ -19,6 +21,9 @@ class CalenderBloc {
     loadingModel.endLoading();
 
 }
+
+
+
 
 
 

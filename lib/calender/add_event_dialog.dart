@@ -15,7 +15,8 @@ import 'package:provider/provider.dart';
 class AddEventDialog extends StatefulWidget {
   final initDate;
   final context2;
-  AddEventDialog({Key key, this.initDate,this.context2}) : super(key: key);
+
+  AddEventDialog({Key key, this.initDate, this.context2}) : super(key: key);
 
   @override
   _AddEventDialogState createState() => _AddEventDialogState();
@@ -31,9 +32,11 @@ class _AddEventDialogState extends State<AddEventDialog> {
   double blueValue = 0.0;
   DateTime start;
   DateTime end;
-  String title = '';
-  String note = '';
-  CalenderBloc bloc ;
+  String title;
+
+  String note;
+
+  CalenderBloc bloc;
 
   @override
   void initState() {
@@ -41,14 +44,17 @@ class _AddEventDialogState extends State<AddEventDialog> {
     super.initState();
 
     selectedDate = widget.initDate;
-    start=selectedDate;
-    end=selectedDate;
+    start = selectedDate;
+    end = selectedDate;
   }
 
   @override
   Widget build(BuildContext context) {
-    bloc = CalenderBloc(loadingModel: Provider.of<LoadingModel>(widget.context2, listen: false));
+    bloc = CalenderBloc(
+        loadingModel:
+            Provider.of<LoadingModel>(widget.context2, listen: false));
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         width: double.infinity,
         height: 600,
@@ -66,7 +72,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
                     child: buildPicker(true)),
                 Text("終了時刻"),
                 Container(
-                    color: Colors.white,
+                    color: Colors.transparent,
                     height: 50,
                     width: 300,
                     child: buildPicker(false)),
@@ -92,11 +98,12 @@ class _AddEventDialogState extends State<AddEventDialog> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 55,
-                      height: 55,
+                      width: 100,
+                      height: 100,
                       color: Color.fromARGB(255, redValue.toInt(),
                           greenValue.toInt(), blueValue.toInt()),
                     ),
+                    SizedBox(width: 50,),
                     Column(
                       children: [
                         CupertinoSlider(
@@ -140,24 +147,46 @@ class _AddEventDialogState extends State<AddEventDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                MaterialButton(
-                  child: Text("Delete"),
-                  onPressed: () => Navigator.pop(context),
+                Container(
+                  //color: Colors.red,
+                  width: 100,
+                  height: 50,
+                  child: MaterialButton(
+                    child: Text("Delete"),
+                    onPressed: () => Navigator.pop(context),
+                  ),
                 ),
                 MaterialButton(
                   child: Text("OK"),
-                  onPressed: ()  async {
-                    await bloc.uploadEvent(CalenderModel(
-                        uid: FirebaseAuth.instance.currentUser.uid,
-                        targetDate: selectedDate,
-                        startTime: start,
-                        endTime: end,
-                        color: EventColorModel(
-                            red: redValue.toInt(),
-                            green: greenValue.toInt(),
-                            blue: blueValue.toInt()),
-                        title: title,
-                        note: note));
+                  onPressed: () async {
+                    if (title == null || note == null)
+                      await showDialog(
+                        context: context,
+                        builder: (_) {
+                          return AlertDialog(
+                            title: Text("エラー"),
+                            content: Text("タイトルとメモを入力してください"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text("OK"),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    else
+                      await bloc.uploadEvent(CalenderModel(
+                          uid: FirebaseAuth.instance.currentUser.uid,
+                          targetDate: selectedDate,
+                          startTime: start,
+                          endTime: end,
+                          color: EventColorModel(
+                              red: redValue.toInt(),
+                              green: greenValue.toInt(),
+                              blue: blueValue.toInt()),
+                          title: title,
+                          note: note));
                     Navigator.pop(context);
                   },
                 ),
@@ -167,86 +196,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
         ),
       ),
     );
-    /*return CupertinoAlertDialog(
-      title: Text('予定を登録'),
-      content: Container(
-          width: 450,
-          height: 550,
-          child: Column(
-            children: [
-              _calenderArea(),
-              Text("開始時刻"),
-              Container(
-                  color: Colors.transparent,
-                  height: 50,
-                  width: 300,
-                  child: buildPicker()),
-              Text("終了時刻"),
-              Container(
-                  color: Colors.white,
-                  height: 50,
-                  width: 300,
-                  child: buildPicker()),
-              Material(
-                child: TextField(
-                  decoration: InputDecoration(hintText: 'exsample@neco.com'),
-                  controller: EventController,
-                  onChanged: (text) {},
-                ),
-              ),
-             Row(children: [
-               Container(width:55,height:55,color: Color.fromARGB(255, redValue.toInt(), greenValue.toInt(), blueValue.toInt()),),
-               Column(children: [
-                 CupertinoSlider(
-                   min: 0,
-                   max: 255,
-                   onChanged: (double value) {
-                     setState(() {
-                       redValue = value;
-                     });
-                   },
-                   value: redValue,
-                 ),
-                 CupertinoSlider(
-                   min: 0,
-                   max: 255,
-                   onChanged: (double value) {
-                     setState(() {
-                       greenValue = value;
-                     });
-                   },
-                   value: greenValue,
-                 ),
-                 CupertinoSlider(
-                   min: 0,
-                   max: 255,
-                   onChanged: (double value) {
-                     setState(() {
-                       blueValue = value;
-                     });
-                   },
-                   value: blueValue,
-                 ),
-               ],)
-             ],),
-              RaisedButton(
-                  onPressed: () =>
-                      {Navigator.pushNamed(context, '/addeventpage')}),
-              //Container(color:Colors.white,height:50,width:100,child: showPickerDateRange(context)),
-            ],
-          )),
-      actions: [
-        CupertinoDialogAction(
-          child: Text("Delete"),
-          isDestructiveAction: true,
-          onPressed: () => Navigator.pop(context),
-        ),
-        CupertinoDialogAction(
-          child: Text("OK"),
-          onPressed: () => {Navigator.pushNamed(context, '/addeventpage')},
-        ),
-      ],
-    );*/
+
   }
 
   Widget _calenderArea() {
@@ -272,9 +222,11 @@ class _AddEventDialogState extends State<AddEventDialog> {
 
   Widget buildPicker(bool isStart) {
     Picker picker = Picker(
+      containerColor: Colors.transparent,
         height: 50,
         itemExtent: 30,
-        selecteds: isStart?[start.hour,start.minute]:[end.hour,end.minute],
+        selecteds:
+            isStart ? [start.hour, start.minute] : [end.hour, end.minute],
         adapter: NumberPickerAdapter(data: [
           NumberPickerColumn(begin: 0, end: 23),
           NumberPickerColumn(begin: 0, end: 59),
