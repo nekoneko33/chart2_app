@@ -1,6 +1,12 @@
+import 'package:charts2_app/bloc/calender_bloc.dart';
+import 'package:charts2_app/calender/calender_model.dart';
+import 'package:charts2_app/loading/loading_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neat_and_clean_calendar/flutter_neat_and_clean_calendar.dart';
+import 'package:provider/provider.dart';
 
 import 'add_event_dialog.dart';
 
@@ -24,77 +30,10 @@ class CalenderScreen extends StatefulWidget {
 
 class _CalenderScreenState extends State<CalenderScreen> {
   DateTime selectedDate;
-  final Map<DateTime, List<NeatCleanCalendarEvent>> _events = {
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day): [
-      NeatCleanCalendarEvent('Event A',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day, 10, 0),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day, 12, 0),
-          description: 'A special event',
-          color: Colors.blue[700]),
-    ],
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 2):
-        [
-      NeatCleanCalendarEvent('Event B',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 10, 0),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 12, 0),
-          color: Colors.orange),
-      NeatCleanCalendarEvent('Event C',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.pink),
-    ],
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 3):
-        [
-      NeatCleanCalendarEvent('Event B',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 10, 0),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 12, 0),
-          color: Colors.orange),
-      NeatCleanCalendarEvent('Event C',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.pink),
-      NeatCleanCalendarEvent('Event D',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.amber),
-      NeatCleanCalendarEvent('Event E',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.deepOrange),
-      NeatCleanCalendarEvent('Event F',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.green),
-      NeatCleanCalendarEvent('Event G',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.indigo),
-      NeatCleanCalendarEvent('Event H',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.brown),
-    ],
-  };
+  CalenderBloc bloc ;
+  String userName=FirebaseAuth.instance.currentUser.uid;
+
+
 
   @override
   void initState() {
@@ -103,30 +42,17 @@ class _CalenderScreenState extends State<CalenderScreen> {
     selectedDate = DateTime.now();
     _handleNewDate(DateTime(
         DateTime.now().year, DateTime.now().month, DateTime.now().day));
+    WidgetsBinding.instance.addPostFrameCallback((_) => bloc.getRecord(userName));
   }
 
   @override
   Widget build(BuildContext context) {
+    bloc = CalenderBloc(loadingModel:
+    Provider.of<LoadingModel>(context, listen: false));
+
     return Scaffold(
       body: SafeArea(
-        child: Calendar(
-          startOnMonday: true,
-          weekDays: ['月', '火', '水', '木', '金', '土', '日'],
-          events: _events,
-          isExpandable: true,
-          eventDoneColor: Colors.green,
-          selectedColor: Colors.pink,
-          todayColor: Colors.blue,
-          eventColor: Colors.grey,
-          locale: 'ja_JP',
-          todayButtonText: '',
-          isExpanded: true,
-          expandableDateFormat: 'yyyy年　MM月　dd日　EEEE',
-          dayOfWeekStyle: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
-          onDateSelected: _handleNewDate,
-          onMonthChanged: _handleNewDate,
-        ),
+        child: _buildBody(context),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -146,4 +72,66 @@ class _CalenderScreenState extends State<CalenderScreen> {
     selectedDate = date;
     print('Date selected: $date');
   }
+
+  Widget _buildBody(BuildContext context) {
+    return StreamBuilder<List<QueryDocumentSnapshot>>(
+      stream: bloc.streamController.stream,
+      builder: (context, snapshot) {
+
+        if (snapshot.hasError) return Container(child: Text("error!!"),);
+        if (!snapshot.hasData) return Container();
+
+        //final scheduleList=CalenderModel.fromSnapshot(snapshot.data.first);
+        final Map<DateTime, List<NeatCleanCalendarEvent>> _events = {};
+        snapshot.data.forEach((e) {
+          final scheduleList = CalenderModel.fromSnapshot(e);
+          if(_events.containsKey(DateTime(
+              scheduleList.targetDate.year, scheduleList.targetDate.month,
+              scheduleList.targetDate.day))){
+            _events[DateTime(
+                scheduleList.targetDate.year, scheduleList.targetDate.month,
+                scheduleList.targetDate.day)].add(NeatCleanCalendarEvent(scheduleList.title,
+              startTime: scheduleList.startTime,
+              endTime: scheduleList.endTime,
+              description: scheduleList.note,
+              color: Color.fromARGB(255, scheduleList.color.red,
+                  scheduleList.color.green, scheduleList.color.blue),));
+          }
+          else
+          _events[DateTime(
+              scheduleList.targetDate.year, scheduleList.targetDate.month,
+              scheduleList.targetDate.day)] = [
+            NeatCleanCalendarEvent(scheduleList.title,
+              startTime: scheduleList.startTime,
+              endTime: scheduleList.endTime,
+              description: scheduleList.note,
+              color: Color.fromARGB(255, scheduleList.color.red,
+                  scheduleList.color.green, scheduleList.color.blue),)
+          ];
+        });
+
+
+
+        return  Calendar(
+          startOnMonday: true,
+          weekDays: ['月', '火', '水', '木', '金', '土', '日'],
+          events: _events,
+          isExpandable: true,
+          eventDoneColor: Colors.green,
+          selectedColor: Colors.pink,
+          todayColor: Colors.blue,
+          eventColor: Colors.grey,
+          locale: 'ja_JP',
+          todayButtonText: '',
+          isExpanded: true,
+          expandableDateFormat: 'yyyy年　MM月　dd日　EEEE',
+          dayOfWeekStyle: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
+          onDateSelected: _handleNewDate,
+          onMonthChanged: _handleNewDate,
+        );
+      },
+    );
+  }
+
 }

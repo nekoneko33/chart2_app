@@ -22,7 +22,19 @@ class CalenderBloc {
 
 }
 
-
+  void getRecord(String userName) {
+    loadingModel.startLoading();
+    FirebaseFirestore.instance
+        .collection('schedule')
+        .where('uid',isEqualTo:userName )
+        .get()
+        .then((QuerySnapshot value) {
+      streamController.add(value.docs);
+    }).catchError((onError) {
+      streamController.addError(onError);
+    }).whenComplete(() => loadingModel.endLoading());
+    
+  }
 
 
 

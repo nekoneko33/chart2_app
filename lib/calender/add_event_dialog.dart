@@ -6,6 +6,7 @@ import 'package:charts2_app/loading/loading_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_picker/Picker.dart';
 import 'package:flutter_picker/PickerLocalizations.dart';
 import 'package:intl/date_symbol_data_file.dart';
@@ -38,6 +39,9 @@ class _AddEventDialogState extends State<AddEventDialog> {
 
   CalenderBloc bloc;
 
+  final _formKey = GlobalKey<FormState>();
+  final _passwordFocusNode=FocusNode();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -50,6 +54,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
 
   @override
   Widget build(BuildContext context) {
+
     bloc = CalenderBloc(
         loadingModel:
             Provider.of<LoadingModel>(widget.context2, listen: false));
@@ -77,16 +82,30 @@ class _AddEventDialogState extends State<AddEventDialog> {
                     width: 300,
                     child: buildPicker(false)),
                 Material(
-                  child: TextField(
+                  child: TextFormField(
+                    key: _formKey,
                     decoration: InputDecoration(hintText: 'Title'),
                     controller: titleController,
+                    onFieldSubmitted:(_){
+                      FocusScope.of(context).requestFocus(_passwordFocusNode);
+                    },
                     onChanged: (text) {
                       title = text;
                     },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value){
+                      if(value.isEmpty){
+                      return 'Please enter some text';
+                       }
+                      return null;
+                    },
+
+
                   ),
                 ),
                 Material(
                   child: TextField(
+                    focusNode: _passwordFocusNode,
                     decoration: InputDecoration(hintText: 'note'),
                     controller: noteController,
                     onChanged: (text) {
@@ -158,9 +177,12 @@ class _AddEventDialogState extends State<AddEventDialog> {
                 ),
                 MaterialButton(
                   child: Text("OK"),
+
                   onPressed: () async {
-                    if (title == null || note == null)
-                      await showDialog(
+
+                   //if (_formKey.currentState.validate())
+
+                      /*await showDialog(
                         context: context,
                         builder: (_) {
                           return AlertDialog(
@@ -174,8 +196,8 @@ class _AddEventDialogState extends State<AddEventDialog> {
                             ],
                           );
                         },
-                      );
-                    else
+                      );*/
+
                       await bloc.uploadEvent(CalenderModel(
                           uid: FirebaseAuth.instance.currentUser.uid,
                           targetDate: selectedDate,
@@ -258,6 +280,8 @@ class _AddEventDialogState extends State<AddEventDialog> {
     return picker.makePicker();
   }
 
+
+
 /*
   showPickerDateRange(BuildContext context) {
     print("canceltext: ${PickerLocalizations.of(context).cancelText}");
@@ -312,5 +336,30 @@ class _AddEventDialogState extends State<AddEventDialog> {
           );
 
   }*/
+
+}
+
+
+nameValidator(String value)  {
+
+    if (value == null) {
+      return '値が未設定です。';
+    }
+    if (value.isEmpty) {
+      return '値が未設定です。';
+    }
+
+    if (value.indexOf(' ') >= 0 && value.trim() == '') {
+      return '空文字は受け付けていません。';
+    }
+
+    if (value.indexOf('　') >= 0 && value.trim() == '') {
+      return '空文字は受け付けていません。';
+    }
+
+    if (value.length > 30) {
+      return '30文字以下にしてください';
+    }
+    return null;
 
 }
