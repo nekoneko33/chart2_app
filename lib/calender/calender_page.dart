@@ -30,41 +30,47 @@ class CalenderScreen extends StatefulWidget {
 
 class _CalenderScreenState extends State<CalenderScreen> {
   DateTime selectedDate;
-  CalenderBloc bloc ;
-  String userName=FirebaseAuth.instance.currentUser.uid;
+  DateTime selectedMonth;
+  CalenderBloc bloc;
 
-
+  String userName = FirebaseAuth.instance.currentUser.uid;
 
   @override
   void initState() {
     super.initState();
     // Force selection of today on first load, so that the list of today's events gets shown.
     selectedDate = DateTime.now();
+    selectedMonth = DateTime.now();
     _handleNewDate(DateTime(
         DateTime.now().year, DateTime.now().month, DateTime.now().day));
-    WidgetsBinding.instance.addPostFrameCallback((_) => bloc.getRecord(userName));
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => bloc.getRecord(userName, selectedMonth));
   }
 
   @override
   Widget build(BuildContext context) {
-    bloc = CalenderBloc(loadingModel:
-    Provider.of<LoadingModel>(context, listen: false));
+    bloc = CalenderBloc(
+        loadingModel: Provider.of<LoadingModel>(context, listen: false));
 
     return Scaffold(
       body: SafeArea(
         child: _buildBody(context),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
+        onPressed: () async {
+          await showDialog(
               context: context,
               builder: (context) {
-                return AddEventDialog(context2:this.context,initDate: selectedDate,);
+                return AddEventDialog (
+                  context2: this.context,
+                  initDate: selectedDate,
+                  username: userName,
+                );
               });
+          bloc.getRecord(userName, selectedDate);
         },
         child: Icon(Icons.add),
       ),
-
     );
   }
 
@@ -73,46 +79,59 @@ class _CalenderScreenState extends State<CalenderScreen> {
     print('Date selected: $date');
   }
 
+  void _handleNewMonth(DateTime date) {
+    selectedDate = date;
+
+    if ((date.year == selectedMonth.year &&
+            date.month != selectedMonth.month) ||
+        (date.year != selectedMonth.year)) {
+      selectedMonth = date;
+      bloc.getRecord(userName, selectedMonth);
+      print('Date selected: $date');
+    }
+  }
+
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<List<QueryDocumentSnapshot>>(
       stream: bloc.streamController.stream,
       builder: (context, snapshot) {
-
-        if (snapshot.hasError) return Container(child: Text("error!!"),);
+        if (snapshot.hasError)
+          return Container(
+            child: Text("error!!"),
+          );
         if (!snapshot.hasData) return Container();
 
         //final scheduleList=CalenderModel.fromSnapshot(snapshot.data.first);
         final Map<DateTime, List<NeatCleanCalendarEvent>> _events = {};
         snapshot.data.forEach((e) {
           final scheduleList = CalenderModel.fromSnapshot(e);
-          if(_events.containsKey(DateTime(
-              scheduleList.targetDate.year, scheduleList.targetDate.month,
-              scheduleList.targetDate.day))){
-            _events[DateTime(
-                scheduleList.targetDate.year, scheduleList.targetDate.month,
-                scheduleList.targetDate.day)].add(NeatCleanCalendarEvent(scheduleList.title,
+          if (_events.containsKey(DateTime(scheduleList.targetDate.year,
+              scheduleList.targetDate.month, scheduleList.targetDate.day))) {
+            _events[DateTime(scheduleList.targetDate.year,
+                    scheduleList.targetDate.month, scheduleList.targetDate.day)]
+                .add(NeatCleanCalendarEvent(
+              scheduleList.title,
               startTime: scheduleList.startTime,
               endTime: scheduleList.endTime,
               description: scheduleList.note,
               color: Color.fromARGB(255, scheduleList.color.red,
-                  scheduleList.color.green, scheduleList.color.blue),));
-          }
-          else
-          _events[DateTime(
-              scheduleList.targetDate.year, scheduleList.targetDate.month,
-              scheduleList.targetDate.day)] = [
-            NeatCleanCalendarEvent(scheduleList.title,
-              startTime: scheduleList.startTime,
-              endTime: scheduleList.endTime,
-              description: scheduleList.note,
-              color: Color.fromARGB(255, scheduleList.color.red,
-                  scheduleList.color.green, scheduleList.color.blue),)
-          ];
+                  scheduleList.color.green, scheduleList.color.blue),
+            ));
+          } else
+            _events[DateTime(scheduleList.targetDate.year,
+                scheduleList.targetDate.month, scheduleList.targetDate.day)] = [
+              NeatCleanCalendarEvent(
+                scheduleList.title,
+                startTime: scheduleList.startTime,
+                endTime: scheduleList.endTime,
+                description: scheduleList.note,
+                color: Color.fromARGB(255, scheduleList.color.red,
+                    scheduleList.color.green, scheduleList.color.blue),
+              )
+            ];
         });
 
-
-
-        return  Calendar(
+        return Calendar(
           startOnMonday: true,
           weekDays: ['月', '火', '水', '木', '金', '土', '日'],
           events: _events,
@@ -128,10 +147,9 @@ class _CalenderScreenState extends State<CalenderScreen> {
           dayOfWeekStyle: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
           onDateSelected: _handleNewDate,
-          onMonthChanged: _handleNewDate,
+          onMonthChanged: _handleNewMonth,
         );
       },
     );
   }
-
 }

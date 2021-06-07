@@ -22,11 +22,16 @@ class CalenderBloc {
 
 }
 
-  void getRecord(String userName) {
+  void getRecord(String userName,DateTime selectedMonth) {
     loadingModel.startLoading();
+    DateTime startDate=DateTime(selectedMonth.year, selectedMonth.month, 1);
+    DateTime endDate=DateTime(selectedMonth.year, selectedMonth.month+1, 1);
     FirebaseFirestore.instance
         .collection('schedule')
         .where('uid',isEqualTo:userName )
+        .where('targetDate',isGreaterThanOrEqualTo: startDate)
+        .where('targetDate',isLessThan: endDate)
+        .orderBy('targetDate')
         .get()
         .then((QuerySnapshot value) {
       streamController.add(value.docs);

@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
                 theme: ThemeData(
                   primaryColor: Colors.red,
                 ),
-                initialRoute: '/init',
+                initialRoute: '/',
                 routes: {
                   '/': (context) => HomePage(),
                   '/next': (context) => NextPage(),
