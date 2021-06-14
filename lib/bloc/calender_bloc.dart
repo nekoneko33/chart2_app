@@ -42,6 +42,11 @@ class CalenderBloc {
   }
 
 
+  void update(DocumentReference reference) {
+    reference.update({'title': title,'startTime':,'endTime':,
+    }).whenComplete(() => getRecord());
+  }
+
 
 
 }

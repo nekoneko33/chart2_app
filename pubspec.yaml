@@ -42,8 +42,13 @@ dependencies:
   firebase_storage: ^8.0.0
   firebase_auth: ^1.0.1
   hijri_picker: ^2.0.0
-  flutter_neat_and_clean_calendar: ^0.2.2+10
+  flutter_neat_and_clean_calendar:
+    git:
+      url: git://github.com/nekoneko33/flutter_neat_and_clean_calendar.git
+      ref: my_master
   flutter_picker: ^2.0.1
+  fluttertoast: ^8.0.7
+
 
 
 dev_dependencies:

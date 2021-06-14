@@ -49,6 +49,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if(bloc==null)
     bloc = CalenderBloc(
         loadingModel: Provider.of<LoadingModel>(context, listen: false));
 
@@ -60,11 +61,12 @@ class _CalenderScreenState extends State<CalenderScreen> {
         onPressed: () async {
           await showDialog(
               context: context,
-              builder: (context) {
+              builder: (con) {
                 return AddEventDialog (
-                  context2: this.context,
+                  context2: context,
                   initDate: selectedDate,
                   username: userName,
+                  isUpdate: false,
                 );
               });
           bloc.getRecord(userName, selectedDate);
@@ -91,6 +93,20 @@ class _CalenderScreenState extends State<CalenderScreen> {
     }
   }
 
+  void _eventChange(){
+    showDialog(
+        context: context,
+        builder: (con) {
+          return AddEventDialog (
+            context2: context,
+            initDate: selectedDate,
+            username: userName,
+            isUpdate: true,
+          );
+        });
+}
+
+
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<List<QueryDocumentSnapshot>>(
       stream: bloc.streamController.stream,
@@ -104,7 +120,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
         //final scheduleList=CalenderModel.fromSnapshot(snapshot.data.first);
         final Map<DateTime, List<NeatCleanCalendarEvent>> _events = {};
         snapshot.data.forEach((e) {
-          final scheduleList = CalenderModel.fromSnapshot(e);
+          final scheduleList = CalenderModel.fromSnapshot(e,reference:e.reference);
           if (_events.containsKey(DateTime(scheduleList.targetDate.year,
               scheduleList.targetDate.month, scheduleList.targetDate.day))) {
             _events[DateTime(scheduleList.targetDate.year,
@@ -148,6 +164,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
               color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
           onDateSelected: _handleNewDate,
           onMonthChanged: _handleNewMonth,
+          onEventSelected: _eventChange(),
         );
       },
     );

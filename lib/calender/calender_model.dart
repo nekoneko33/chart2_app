@@ -11,12 +11,14 @@ class CalenderModel{
   String title;
   String note;
 
-  CalenderModel({this.uid,this.targetDate,this.startTime,this.endTime,this.color,this.title,this.note});
+  DocumentReference reference;
+
+  CalenderModel({this.uid,this.targetDate,this.startTime,this.endTime,this.color,this.title,this.note,this.reference});
 
   Map<String, dynamic> toJson() =>
       <String, dynamic>{'uid': uid, 'targetDate': targetDate, 'startTime': startTime, 'endTime': endTime, 'color': color.toJson(), 'title': title, 'note': note};
 
-  CalenderModel.fromSnapshot(QueryDocumentSnapshot map)
+  CalenderModel.fromSnapshot(QueryDocumentSnapshot map, {DocumentReference reference})
       : assert(map['uid'] != null),
         assert(map['targetDate'] != null),
         assert(map['startTime'] != null),
@@ -29,7 +31,8 @@ class CalenderModel{
         endTime = (map['endTime'] as Timestamp).toDate(),
         title = map['title'],
         note = map['note'],
-        color=EventColorModel.fromSnapshot(map['color']);
+        color=EventColorModel.fromSnapshot(map['color']),
+        reference=reference;
 
 }
 

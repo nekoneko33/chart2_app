@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ffi';
 
 import 'package:charts2_app/bloc/calender_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_picker/Picker.dart';
 import 'package:flutter_picker/PickerLocalizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/date_symbol_data_file.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -17,8 +19,10 @@ class AddEventDialog extends StatefulWidget {
   final initDate;
   final context2;
   final username;
+  final bool isUpdate;
 
-  AddEventDialog({Key key, this.initDate, this.context2,this.username}) : super(key: key);
+  AddEventDialog({Key key, this.initDate, this.context2, this.username,this.isUpdate})
+      : super(key: key);
 
   @override
   _AddEventDialogState createState() => _AddEventDialogState();
@@ -40,11 +44,11 @@ class _AddEventDialogState extends State<AddEventDialog> {
 
   CalenderBloc bloc;
 
+
   final _formKey = GlobalKey<FormState>();
-  final _passwordFocusNode=FocusNode();
+  final _passwordFocusNode = FocusNode();
 
-  String nameValidator(String value)  {
-
+  String nameValidator(String value) {
     if (value == null) {
       return '値が未設定です。';
     }
@@ -64,26 +68,27 @@ class _AddEventDialogState extends State<AddEventDialog> {
       return '30文字以下にしてください';
     }
     return null;
-
   }
-
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+    bloc = CalenderBloc(
+        loadingModel:
+        Provider.of<LoadingModel>(widget.context2, listen: false));
+
+    });
 
     selectedDate = widget.initDate;
     start = selectedDate;
     end = selectedDate;
+
   }
 
   @override
   Widget build(BuildContext context) {
-
-    bloc = CalenderBloc(
-        loadingModel:
-            Provider.of<LoadingModel>(widget.context2, listen: false));
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -111,20 +116,17 @@ class _AddEventDialogState extends State<AddEventDialog> {
                       child: buildPicker(false)),
                   Material(
                     child: TextFormField(
-
-                      decoration: InputDecoration(hintText: 'Title'),
-                      controller: titleController,
-                      onFieldSubmitted:(_){
-                        FocusScope.of(context).requestFocus(_passwordFocusNode);
-                      },
-                      onChanged: (text) {
-                        title = text;
-                      },
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: nameValidator
-
-
-                    ),
+                        decoration: InputDecoration(hintText: 'Title'),
+                        controller: titleController,
+                        onFieldSubmitted: (_) {
+                          FocusScope.of(context)
+                              .requestFocus(_passwordFocusNode);
+                        },
+                        onChanged: (text) {
+                          title = text;
+                        },
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: nameValidator),
                   ),
                   Material(
                     child: TextField(
@@ -145,7 +147,9 @@ class _AddEventDialogState extends State<AddEventDialog> {
                         color: Color.fromARGB(255, redValue.toInt(),
                             greenValue.toInt(), blueValue.toInt()),
                       ),
-                      SizedBox(width: 50,),
+                      SizedBox(
+                        width: 50,
+                      ),
                       Column(
                         children: [
                           CupertinoSlider(
@@ -199,12 +203,9 @@ class _AddEventDialogState extends State<AddEventDialog> {
                     ),
                   ),
                   MaterialButton(
-                    child: Text("OK"),
-
+                    child: Text(widget.isUpdate ? '追加' : '更新'),
                     onPressed: () {
-
-                     if (_formKey.currentState.validate()) {
-
+                      if (_formKey.currentState.validate()) {
                         /*await showDialog(
                           context: context,
                           builder: (_) {
@@ -221,7 +222,8 @@ class _AddEventDialogState extends State<AddEventDialog> {
                           },
                         );*/
 
-                         bloc.uploadEvent(CalenderModel(
+
+                        bloc.uploadEvent(CalenderModel(
                             uid: FirebaseAuth.instance.currentUser.uid,
                             targetDate: selectedDate,
                             startTime: start,
@@ -233,10 +235,11 @@ class _AddEventDialogState extends State<AddEventDialog> {
                             title: title,
                             note: note));
 
-                      Navigator.pop(context);
-                         //bloc.getRecord(widget.username, widget.initDate);
+                        //Navigator.pushReplacementNamed(widget.context2, '/calender');
+                        Navigator.pop(context);
+                        //bloc.getRecord(widget.username, widget.initDate);
 
-                     }
+                      }
                     },
                   ),
                 ],
@@ -246,7 +249,6 @@ class _AddEventDialogState extends State<AddEventDialog> {
         ),
       ),
     );
-
   }
 
   Widget _calenderArea() {
@@ -255,8 +257,12 @@ class _AddEventDialogState extends State<AddEventDialog> {
           var calenderSelectedDate = await showDatePicker(
             context: context,
             initialDate: selectedDate,
-            firstDate: DateTime(DateTime.now().year - 1),
-            lastDate: DateTime(DateTime.now().year + 1),
+            firstDate: DateTime(DateTime
+                .now()
+                .year - 1),
+            lastDate: DateTime(DateTime
+                .now()
+                .year + 1),
           );
 
           // 選択がキャンセルされた場合はNULL
@@ -272,11 +278,11 @@ class _AddEventDialogState extends State<AddEventDialog> {
 
   Widget buildPicker(bool isStart) {
     Picker picker = Picker(
-      containerColor: Colors.transparent,
+        containerColor: Colors.transparent,
         height: 50,
         itemExtent: 30,
         selecteds:
-            isStart ? [start.hour, start.minute] : [end.hour, end.minute],
+        isStart ? [start.hour, start.minute] : [end.hour, end.minute],
         adapter: NumberPickerAdapter(data: [
           NumberPickerColumn(begin: 0, end: 23),
           NumberPickerColumn(begin: 0, end: 59),
@@ -284,10 +290,10 @@ class _AddEventDialogState extends State<AddEventDialog> {
         delimiter: [
           PickerDelimiter(
               child: Container(
-            width: 15.0,
-            alignment: Alignment.center,
-            child: Icon(Icons.more_vert),
-          ))
+                width: 15.0,
+                alignment: Alignment.center,
+                child: Icon(Icons.more_vert),
+              ))
         ],
         hideHeader: true,
         title: Text("Please Select"),
@@ -307,8 +313,6 @@ class _AddEventDialogState extends State<AddEventDialog> {
 
     return picker.makePicker();
   }
-
-
 
 /*
   showPickerDateRange(BuildContext context) {
@@ -366,6 +370,3 @@ class _AddEventDialogState extends State<AddEventDialog> {
   }*/
 
 }
-
-
-
