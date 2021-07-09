@@ -3,6 +3,7 @@ import 'package:charts2_app/calender/calender_model.dart';
 import 'package:charts2_app/loading/loading_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_neat_and_clean_calendar/flutter_neat_and_clean_calendar.dart';
 
 class CalenderBloc {
   final StreamController<List<QueryDocumentSnapshot>> streamController = StreamController<List<QueryDocumentSnapshot>>();
@@ -42,9 +43,8 @@ class CalenderBloc {
   }
 
 
-  void update(DocumentReference reference) {
-    reference.update({'title': title,'startTime':,'endTime':,
-    }).whenComplete(() => getRecord());
+  void update(DocumentReference reference,CalenderModel event) {
+    reference.update(event.toJson());
   }
 
 

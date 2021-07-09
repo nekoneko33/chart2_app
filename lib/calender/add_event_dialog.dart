@@ -4,10 +4,12 @@ import 'dart:ffi';
 import 'package:charts2_app/bloc/calender_bloc.dart';
 import 'package:charts2_app/calender/calender_model.dart';
 import 'package:charts2_app/loading/loading_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_neat_and_clean_calendar/flutter_neat_and_clean_calendar.dart';
 import 'package:flutter_picker/Picker.dart';
 import 'package:flutter_picker/PickerLocalizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,8 +22,10 @@ class AddEventDialog extends StatefulWidget {
   final context2;
   final username;
   final bool isUpdate;
+  final NeatCleanCalendarEvent eventData;
 
-  AddEventDialog({Key key, this.initDate, this.context2, this.username,this.isUpdate})
+
+  AddEventDialog({Key key, this.initDate, this.context2, this.username,this.isUpdate,this.eventData})
       : super(key: key);
 
   @override
@@ -31,16 +35,15 @@ class AddEventDialog extends StatefulWidget {
 class _AddEventDialogState extends State<AddEventDialog> {
   DateTime selectedDate;
   var formatter = new DateFormat('yyyy/MM/dd(E)', "ja_JP");
-  final titleController = TextEditingController();
-  final noteController = TextEditingController();
+
   double redValue = 0.0;
   double greenValue = 0.0;
   double blueValue = 0.0;
   DateTime start;
   DateTime end;
-  String title;
+  String title='';
 
-  String note;
+  String note='';
 
   CalenderBloc bloc;
 
@@ -81,10 +84,23 @@ class _AddEventDialogState extends State<AddEventDialog> {
 
     });
 
-    selectedDate = widget.initDate;
-    start = selectedDate;
-    end = selectedDate;
+    if(widget.isUpdate) {
+      selectedDate = widget.initDate;
+      start = widget.eventData.startTime;
+      end =  widget.eventData.endTime ;
+      title=widget.eventData.summary;
+      note=widget.eventData.description;
 
+      redValue = widget.eventData.color.red.toDouble();
+      blueValue = widget.eventData.color.blue.toDouble();
+      greenValue = widget.eventData.color.green.toDouble();
+    }
+    else{
+      selectedDate = widget.initDate;
+      start =  selectedDate;
+      end =  selectedDate;
+
+    }
   }
 
   @override
@@ -117,7 +133,8 @@ class _AddEventDialogState extends State<AddEventDialog> {
                   Material(
                     child: TextFormField(
                         decoration: InputDecoration(hintText: 'Title'),
-                        controller: titleController,
+
+                        initialValue: widget.isUpdate? widget.eventData.summary:'',
                         onFieldSubmitted: (_) {
                           FocusScope.of(context)
                               .requestFocus(_passwordFocusNode);
@@ -129,10 +146,11 @@ class _AddEventDialogState extends State<AddEventDialog> {
                         validator: nameValidator),
                   ),
                   Material(
-                    child: TextField(
+                    child: TextFormField(
                       focusNode: _passwordFocusNode,
                       decoration: InputDecoration(hintText: 'note'),
-                      controller: noteController,
+                      initialValue: widget.isUpdate? widget.eventData.description:'',
+
                       onChanged: (text) {
                         note = text;
                       },
@@ -203,26 +221,22 @@ class _AddEventDialogState extends State<AddEventDialog> {
                     ),
                   ),
                   MaterialButton(
-                    child: Text(widget.isUpdate ? '追加' : '更新'),
+                    child: Text(widget.isUpdate ? '更新' : '追加'),
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
-                        /*await showDialog(
-                          context: context,
-                          builder: (_) {
-                            return AlertDialog(
-                              title: Text("エラー"),
-                              content: Text("タイトルとメモを入力してください"),
-                              actions: <Widget>[
-                                FlatButton(
-                                  child: Text("OK"),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                              ],
-                            );
-                          },
-                        );*/
-
-
+                        if(widget.isUpdate)
+                          bloc.update(widget.eventData.reference, CalenderModel(
+                              uid: FirebaseAuth.instance.currentUser.uid,
+                              targetDate: selectedDate,
+                              startTime: start,
+                              endTime: end,
+                              color: EventColorModel(
+                                  red: redValue.toInt(),
+                                  green: greenValue.toInt(),
+                                  blue: blueValue.toInt()),
+                              title: title,
+                              note: note));
+                          else
                         bloc.uploadEvent(CalenderModel(
                             uid: FirebaseAuth.instance.currentUser.uid,
                             targetDate: selectedDate,
@@ -271,6 +285,8 @@ class _AddEventDialogState extends State<AddEventDialog> {
           // 選択されて日付で更新
           setState(() {
             selectedDate = calenderSelectedDate;
+            start=DateTime(calenderSelectedDate.year,calenderSelectedDate.month,calenderSelectedDate.day,start.hour,start.minute);
+            end=DateTime(calenderSelectedDate.year,calenderSelectedDate.month,calenderSelectedDate.day,end.hour,end.minute);
           });
         },
         child: Text(formatter.format(selectedDate)));

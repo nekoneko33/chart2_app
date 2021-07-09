@@ -93,8 +93,8 @@ class _CalenderScreenState extends State<CalenderScreen> {
     }
   }
 
-  void _eventChange(){
-    showDialog(
+  void _eventChange(event)async {
+    await showDialog(
         context: context,
         builder: (con) {
           return AddEventDialog (
@@ -102,8 +102,11 @@ class _CalenderScreenState extends State<CalenderScreen> {
             initDate: selectedDate,
             username: userName,
             isUpdate: true,
+            eventData: event,
+
           );
         });
+    bloc.getRecord(userName, selectedDate);
 }
 
 
@@ -132,6 +135,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
               description: scheduleList.note,
               color: Color.fromARGB(255, scheduleList.color.red,
                   scheduleList.color.green, scheduleList.color.blue),
+              reference: e.reference,
             ));
           } else
             _events[DateTime(scheduleList.targetDate.year,
@@ -143,6 +147,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                 description: scheduleList.note,
                 color: Color.fromARGB(255, scheduleList.color.red,
                     scheduleList.color.green, scheduleList.color.blue),
+                reference: e.reference,
               )
             ];
         });
@@ -164,7 +169,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
               color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
           onDateSelected: _handleNewDate,
           onMonthChanged: _handleNewMonth,
-          onEventSelected: _eventChange(),
+          onEventSelected: _eventChange,
         );
       },
     );

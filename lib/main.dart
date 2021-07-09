@@ -6,6 +6,7 @@ import 'package:charts2_app/screen/init_page.dart';
 import 'package:charts2_app/screen/next_page.dart';
 import 'package:charts2_app/screen/third_page.dart';
 import 'package:provider/provider.dart';
+import 'Layout/layout_page.dart';
 import 'add_book/add_book_page.dart';
 import 'package:charts2_app/book_list/book_list_page.dart';
 import 'package:charts2_app/user_preference/user_preference.dart';
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
                   '/addbook': (context) => AddBookPage(),
                   '/calender': (context) => CalenderPage(),
                   '/addeventpage': (context) => AddEventPage(),
+                  '/layout': (context) => LayoutPage(),
                 },
               ),
               Consumer<LoadingModel>(
