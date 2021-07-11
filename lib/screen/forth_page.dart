@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -26,8 +27,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
-  final String userName = "1";
-  final ChatBloc bloc = ChatBloc("1");
+  final String userName = FirebaseAuth.instance.currentUser.uid;
+  ChatBloc bloc ;
   List<ChatDataModel> message = [];
   String sendMessage;
   final _controller = TextEditingController();
@@ -48,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void initState() {
     super.initState();
+    bloc=ChatBloc(widget.documentid);
     _animationController = AnimationController(
       vsync: this, // the SingleTickerProviderStateMixin
       duration: Duration(milliseconds: 200),
