@@ -7,7 +7,7 @@ class DataBloc {
 
   void getRecord() {
     FirebaseFirestore.instance
-        .collection('users')
+        .collection('subjects')
         //.where("japanese")
         .get()
         .then((QuerySnapshot value) {

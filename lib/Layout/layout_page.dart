@@ -2,6 +2,8 @@ import 'package:charts2_app/bloc/calender_bloc.dart';
 import 'package:charts2_app/bloc/data_bloc.dart';
 import 'package:charts2_app/model/firebase_data_model/record_data_model.dart';
 import 'package:charts2_app/model/task_data_model.dart';
+import 'package:charts2_app/screen/forth_page.dart';
+import 'package:charts2_app/screen/group_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,12 +17,18 @@ class LayoutPage extends StatefulWidget {
   _LayoutPageState createState() => _LayoutPageState();
 }
 
-class _LayoutPageState extends State<LayoutPage> {
+class _LayoutPageState extends State<LayoutPage> with TickerProviderStateMixin {
   int _selectedIndex = 0;
   final DataBloc bloc = DataBloc();
 
   DateTime selectedDate;
   DateTime selectedMonth;
+  bool showMenu = false;
+
+  final PageController _pageController = PageController();
+  AnimationController _controller;
+  Animation<double> _animation;
+
   //CalenderBloc bloc;
 
   String userName = FirebaseAuth.instance.currentUser.uid;
@@ -30,122 +38,135 @@ class _LayoutPageState extends State<LayoutPage> {
     super.initState();
     selectedDate = DateTime.now();
     selectedMonth = DateTime.now();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 3500),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.fastOutSlowIn,
+    );
+
+    _controller.addStatusListener((status) {
+      print(status);
+      if (status == AnimationStatus.dismissed&&showMenu)
+        setState(() {showMenu = false;  });
+    });
     //_handleNewDate(DateTime(
-      //  DateTime.now().year, DateTime.now().month, DateTime.now().day));
+    //  DateTime.now().year, DateTime.now().month, DateTime.now().day));
     WidgetsBinding.instance.addPostFrameCallback((_) => bloc.getRecord());
   }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _pageController.animateToPage(_selectedIndex,
+          duration: Duration(milliseconds: 300), curve: Curves.linear);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Page'),
-        centerTitle: true,
-      ),
-      body: PageView(
-        children: [
-          _buildPi(context),
-          //_buildBody(context),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Home'),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            title: Text('Page'),
+            centerTitle: true,
+            leading: MaterialButton(
+              onPressed: () {
+                setState(() {
+                  showMenu = true;
+                  _controller.forward();
+                });
+              },
+              child: Icon(Icons.menu),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            title: Text('Setting'),
+          body: PageView(
+            controller: _pageController,
+            children: [
+              SingleChildScrollView(
+                  child: Column(
+                children: [
+                  Container(height: 300, child: ThirdPage()),
+                  Container(height: 500, child: CalenderPage()),
+                ],
+              )),
+
+              GroupPage(),
+              //_buildBody(context),
+            ],
+            onPageChanged: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            title: Text('Search'),
+          bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: Colors.grey,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                backgroundColor: Colors.grey,
+                icon: Icon(Icons.home),
+                title: Text('Home'),
+              ),
+              BottomNavigationBarItem(
+                backgroundColor: Colors.grey,
+                icon: Icon(Icons.settings),
+                title: Text('Setting'),
+              ),
+              BottomNavigationBarItem(
+                backgroundColor: Colors.grey,
+                icon: Icon(Icons.search),
+                title: Text('Search'),
+              ),
+              BottomNavigationBarItem(
+                backgroundColor: Colors.grey,
+                icon: Icon(Icons.settings),
+                title: Text('Chat'),
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
           ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-
-  Widget _buildPi(BuildContext context) {
-    return StreamBuilder<List<QueryDocumentSnapshot>>(
-      stream: bloc.streamController.stream,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
-        if (snapshot.hasError)
-          return Container(
-            child: Text("error!!"),
-          );
-        return _buildListPi(context, snapshot.data);
-      },
-    );
-  }
-
-  Widget _buildListPi(
-      BuildContext context, List<QueryDocumentSnapshot> snapshot) {
-    final recordListData = ListRecord.fromSnapshot(snapshot);
-    var piedata = [
-      new Task(recordListData.listData[0].name,
-          recordListData.listData[0].votes.toDouble(), Color(0xff3366cc)),
-      new Task(recordListData.listData[1].name,
-          recordListData.listData[1].votes.toDouble(), Color(0xff990099)),
-      new Task(recordListData.listData[2].name,
-          recordListData.listData[2].votes.toDouble(), Color(0xff109618)),
-    ];
-
-    List<charts.Series<Task, String>> _seriesPieData = [
-      charts.Series(
-        domainFn: (Task task, _) => task.task,
-        measureFn: (Task task, _) => task.taskvalue,
-        colorFn: (Task task, _) =>
-            charts.ColorUtil.fromDartColor(task.colorval),
-        id: 'Air Pollution',
-        data: piedata,
-        labelAccessorFn: (Task row, _) => '${row.taskvalue}',
-      ),
-    ];
-
-    return Container(
-      decoration: new BoxDecoration(
-        border: new Border(
-          bottom: BorderSide(width: 5.0, color: Colors.grey),
         ),
-      ),
-      child: charts.PieChart(
-        _seriesPieData,
-        animate: true,
-        animationDuration: Duration(milliseconds: 500),
-        behaviors: [
-          new charts.DatumLegend(
-            outsideJustification: charts.OutsideJustification.endDrawArea,
-            horizontalFirst: false,
-            desiredMaxRows: 2,
-            cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-            entryTextStyle: charts.TextStyleSpec(
-                color: charts.MaterialPalette.purple.shadeDefault,
-                fontFamily: 'Georgia',
-                fontSize: 11),
-          ),
-        ],
-        defaultRenderer: new charts.ArcRendererConfig(
-            arcWidth: 100,
-            arcRendererDecorators: [
-              new charts.ArcLabelDecorator(
-                  labelPosition: charts.ArcLabelPosition.inside)
-            ]),
-      ),
+        showMenu
+            ? Material(
+          color: Colors.transparent,
+                child: Row(
+                  children: [
+                    SizeTransition(
+                        sizeFactor: _animation,
+                        axis: Axis.horizontal,
+                        axisAlignment: -1,
+                        child: Container(
+                          color: Colors.white,
+                          width: MediaQuery.of(context).size.width - 50,
+                          child: Center(
+                            child: Text(
+                                'Sampleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'),
+                          ),
+                        )),
+                    Expanded(
+                        //flex: 1,
+                        child: Container(
+                      color: Colors.black.withOpacity(0.5),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _controller.reverse();
+
+                          });
+                        },
+                      ),
+                    ))
+                  ],
+                ),
+              )
+            : Container()
+      ],
     );
   }
-
-
-
-
 }

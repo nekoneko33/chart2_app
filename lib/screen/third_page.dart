@@ -22,20 +22,17 @@ class _ThirdPageState extends State<ThirdPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('ThirdPage'),
-        centerTitle: true,
-      ),
+
       body: Padding(
         padding: EdgeInsets.all(30),
         child: Container(
           child: Center(
             child: Column(
               children: <Widget>[
-                Text('円グラフ'),
-                SizedBox(
-                  height: 10,
-                ),
+                //Text('円グラフ'),
+                //SizedBox(
+                 // height: 10,
+               // ),
                 Expanded(
                   child: _buildPi(context),
                 ),

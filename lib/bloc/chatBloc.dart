@@ -1,16 +1,17 @@
 import 'dart:async';
 
 import 'package:charts2_app/model/chatDataModel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class ChatBloc {
-  final _notesReference = FirebaseDatabase.instance.reference().child('1-2');
+  DatabaseReference _notesReference ;
 
   final StreamController<ChatDataModel> _sendStream = StreamController<ChatDataModel>();
   final StreamController<ChatDataModel> sendResultStream = StreamController<ChatDataModel>();
 
-  ChatBloc(String userName) {
-
+  ChatBloc(String docid) {
+    _notesReference= FirebaseDatabase.instance.reference().child(docid);
     _notesReference.onChildAdded.listen((Event event) {
       print("aaaaaaaaaaaaaa");
       print(event.snapshot.value);

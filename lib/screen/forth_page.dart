@@ -15,9 +15,10 @@ import 'package:charts2_app/model/sendMessageWidget.dart';
 import 'package:charts2_app/model/receiveMessageWidget.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({this.app});
+  MyHomePage({this.app,this.documentid});
 
   final FirebaseApp app;
+  final String documentid;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
