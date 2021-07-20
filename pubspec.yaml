@@ -48,6 +48,7 @@ dependencies:
       ref: my_master
   flutter_picker: ^2.0.1
   fluttertoast: ^8.0.7
+  shared_preferences: any
 
 
 

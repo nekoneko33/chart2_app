@@ -42,6 +42,11 @@ class LoginPage extends StatelessWidget {
                     await model.login(context);
                   },
                 ),
+                RaisedButton(
+                    child: Text('アカウント作成'),
+                    onPressed: (){
+                      Navigator.pushNamed(context, '/signup');
+                })
               ]),
             );
           },

@@ -50,8 +50,10 @@ class _LayoutPageState extends State<LayoutPage> with TickerProviderStateMixin {
 
     _controller.addStatusListener((status) {
       print(status);
-      if (status == AnimationStatus.dismissed&&showMenu)
-        setState(() {showMenu = false;  });
+      if (status == AnimationStatus.dismissed && showMenu)
+        setState(() {
+          showMenu = false;
+        });
     });
     //_handleNewDate(DateTime(
     //  DateTime.now().year, DateTime.now().month, DateTime.now().day));
@@ -83,6 +85,25 @@ class _LayoutPageState extends State<LayoutPage> with TickerProviderStateMixin {
               },
               child: Icon(Icons.menu),
             ),
+            actions: [
+              _selectedIndex == 1
+                  ? MaterialButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, '/groupserch');
+                      },
+                      child: Icon(Icons.add),
+                    )
+                  : Container(),
+              MaterialButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/login', (Route<dynamic> route) => false);
+                },
+                child: Icon(Icons.logout),
+              ),
+            ],
           ),
           body: PageView(
             controller: _pageController,
@@ -134,7 +155,7 @@ class _LayoutPageState extends State<LayoutPage> with TickerProviderStateMixin {
         ),
         showMenu
             ? Material(
-          color: Colors.transparent,
+                color: Colors.transparent,
                 child: Row(
                   children: [
                     SizeTransition(
@@ -157,7 +178,6 @@ class _LayoutPageState extends State<LayoutPage> with TickerProviderStateMixin {
                         onTap: () {
                           setState(() {
                             _controller.reverse();
-
                           });
                         },
                       ),
